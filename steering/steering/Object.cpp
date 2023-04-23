@@ -2,16 +2,9 @@
 #include "Object.h"
 
 /*ステアの計算をするためのオブジェクトクラス
-各タイヤの向きと速さのベクトルを入力すればベクトルの計算をして表示してくれるようにする*/
-Vec2 pos = {400,300};
-Vec2 size = { 200,200 };
-RectF Robot{pos,size};
-RectF LF_frame;
-RectF RF_frame;
-RectF RB_frame;
-RectF LB_frame;
+各タイヤの向きと速さのベクトルを入力すればベクトルの計算をして表示してくれる*/
 
-Object &Object::draw(Color Framecolor=Palette::White) {
+Object& Object::draw(const Color& Framecolor=Palette::White) {
 	Robot.setCenter(400,300).drawFrame(0, 1, Framecolor);
 	/*ロボットの外枠*/
 	LF_frame.set( Robot.pos,size / 3 ).drawFrame(0, 1, Framecolor);
@@ -26,46 +19,66 @@ Object &Object::draw(Color Framecolor=Palette::White) {
 }
 
 Object& Object::SetLF(Vec2 r) {
-	Circle{ { r.x + Robot.tl().x,-r.y + Robot.tl().y },10 }.draw();
-	//Shape2D::Arrow(Robot.tl(), { r.x + Robot.tl().x,-r.y + Robot.tl().y }, 5, Vec2{ 5,5 }).draw();
+	Circle{ LF_frame.center().x + r.x, LF_frame.center().y - r.y ,7 }.draw();
+	//Shape2D::Arrow(LF_frame.center(), { LF_frame.center().x + r.x, LF_frame.center().y - r.y }, 5, Vec2{ 5,5 }).draw();
 	return *this;
 }
 Object& Object::SetLB(Vec2 r) {
-	Circle{ { r.x + Robot.bl().x,-r.y + Robot.bl().y },10 }.draw();
-	//Shape2D::Arrow(Robot.bl(), { r.x + Robot.bl().x,-r.y + Robot.bl().y }, 5, Vec2{ 5,5 }).draw();
+	Circle{ LB_frame.center().x + r.x, LB_frame.center().y - r.y ,7 }.draw();
+	//Shape2D::Arrow(LB_frame.center(), { LB_frame.center().x + r.x, LB_frame.center().y - r.y }, 5, Vec2{ 5,5 }).draw();
 	return *this;
 }
 Object& Object::SetRF(Vec2 r) {
-	Circle{ { r.x + Robot.tr().x,-r.y + Robot.tr().y },10 }.draw();
-	//Shape2D::Arrow(Robot.tr(), { r.x + Robot.tr().x,-r.y + Robot.tr().y }, 5, Vec2{ 5,5 }).draw();
+	Circle{ RF_frame.center().x + r.x, RF_frame.center().y - r.y ,7 }.draw();
+	//Shape2D::Arrow(RF_frame.center(), { RF_frame.center().x + r.x, RF_frame.center().y - r.y }, 5, Vec2{ 5,5 }).draw();
 	return *this;
 }
 Object& Object::SetRB(Vec2 r) {
-	Circle{ { r.x + Robot.br().x,-r.y + Robot.br().y },10 }.draw();
-	//Shape2D::Arrow(Robot.br(), { r.x + Robot.br().x,-r.y + Robot.br().y }, 5, Vec2{ 5,5 }).draw();
+	Circle{ RB_frame.center().x + r.x, RB_frame.center().y - r.y ,7 }.draw();
+	//Shape2D::Arrow(RB_frame.center(), { RB_frame.center().x + r.x, RB_frame.center().y - r.y }, 5, Vec2{ 5,5 }).draw();
 	return *this;
 }
 
 
 
+/*赤になっているほうが0°のとき前に向いていた方*/
 Object& Object::SetLF(double length,double angle) {
-	//Circle{LF_frame.center(),}.draw();
-	//Shape2D::Arrow(Robot.tl(), { r.x + Robot.tl().x,-r.y + Robot.tl().y }, 5, Vec2{ 5,5 }).draw();
+	RectF{ 0,0,LF_frame.w / 3.1,LF_frame.h / 1.5 }.setCenter(LF_frame.center()).rotated(ToRadians(angle))
+		.draw(Palette::Red, Palette::Red, Palette::White, Palette::White);
+	Shape2D::Arrow(LF_frame.center()
+			, { LF_frame.center().x+length * sin(ToRadians(angle))
+			, LF_frame.center().y - length * cos(ToRadians(angle)) }
+			, 6
+			, Vec2{ 8,8 }).draw();
 	return *this;
 }
 Object& Object::SetLB(double length, double angle) {
-	//Circle{ { r.x + Robot.bl().x,-r.y + Robot.bl().y },10 }.draw();
-	//Shape2D::Arrow(Robot.bl(), { r.x + Robot.bl().x,-r.y + Robot.bl().y }, 5, Vec2{ 5,5 }).draw();
+	RectF{ 0,0,LB_frame.w / 3.1,LB_frame.h / 1.5 }.setCenter(LB_frame.center()).rotated(ToRadians(angle))
+		.draw(Palette::Red, Palette::Red, Palette::White, Palette::White);
+	Shape2D::Arrow(LB_frame.center()
+			, { LB_frame.center().x + length * sin(ToRadians(angle))
+			, LB_frame.center().y - length * cos(ToRadians(angle)) }
+			, 6
+			, Vec2{ 8,8 }).draw();
 	return *this;
 }
 Object& Object::SetRF(double length, double angle) {
-	//Circle{ { r.x + Robot.tr().x,-r.y + Robot.tr().y },10 }.draw();
-	//Shape2D::Arrow(Robot.tr(), { r.x + Robot.tr().x,-r.y + Robot.tr().y }, 5, Vec2{ 5,5 }).draw();
+	RectF{ 0,0,RF_frame.w / 3.1,RF_frame.h / 1.5 }.setCenter(RF_frame.center()).rotated(ToRadians(angle))
+		.draw(Palette::Red, Palette::Red, Palette::White, Palette::White);
+	Shape2D::Arrow(RF_frame.center()
+		, { RF_frame.center().x + length * sin(ToRadians(angle))
+		, RF_frame.center().y - length * cos(ToRadians(angle)) }
+		, 6
+		, Vec2{ 8,8 }).draw();
 	return *this;
 }
 Object& Object::SetRB(double length, double angle) {
-	//Circle{ { r.x + Robot.br().x,-r.y + Robot.br().y },10 }.draw();
-	//Shape2D::Arrow(Robot.br(), { r.x + Robot.br().x,-r.y + Robot.br().y }, 5, Vec2{ 5,5 }).draw();
+	RectF{ 0,0,RB_frame.w / 3.1,RB_frame.h / 1.5 }.setCenter(RB_frame.center()).rotated(ToRadians(angle))
+		.draw(Palette::Red, Palette::Red, Palette::White, Palette::White);
+	Shape2D::Arrow(RB_frame.center()
+		, { RB_frame.center().x + length * sin(ToRadians(angle))
+		, RB_frame.center().y - length * cos(ToRadians(angle)) }
+		, 6
+		, Vec2{ 8,8 }).draw();
 	return *this;
 }
-

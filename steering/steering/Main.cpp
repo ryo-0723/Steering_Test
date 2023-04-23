@@ -3,7 +3,6 @@
 # include "Object.h"
 void Main()
 {
-
 	Color color =Palette::White;
 	Steer steer;
 	Object robot;
@@ -29,10 +28,10 @@ void Main()
 		}
 
 		steer.Update(LeftAxis, InputTurn, 0);
-		robot.SetRF(steer.GetRF())
-			 .SetRB(steer.GetRB())
-			 .SetLF(steer.GetLF())
-			 .SetLB(steer.GetLB())
+		robot.SetRF(steer.GetRF_l(), steer.GetRF_a())
+			 .SetRB(steer.GetRB_l(), steer.GetRB_a())
+			 .SetLF(steer.GetLF_l(), steer.GetLF_a())
+			 .SetLB(steer.GetLB_l(), steer.GetLB_a())
 			 .draw(color);
 	}
 }
