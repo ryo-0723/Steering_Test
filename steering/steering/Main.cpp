@@ -26,12 +26,16 @@ void Main()
 			/*ps5だったらat(2)だよ*/
 			Print << LeftAxis <<U" "<< InputTurn;
 		}
+		Print << Scene::DeltaTime()*1000;
 
 		steer.Update(LeftAxis, InputTurn, 0);
-		robot.SetRF(steer.GetRF_l(), steer.GetRF_a())
-			 .SetRB(steer.GetRB_l(), steer.GetRB_a())
-			 .SetLF(steer.GetLF_l(), steer.GetLF_a())
-			 .SetLB(steer.GetLB_l(), steer.GetLB_a())
-			 .draw(color);
+		//robot.SetRF(steer.GetRF_l(), steer.GetRF_a())
+		//	 .SetRB(steer.GetRB_l(), steer.GetRB_a())
+		//	 .SetLF(steer.GetLF_l(), steer.GetLF_a())
+		//	 .SetLB(steer.GetLB_l(), steer.GetLB_a())
+		//	 .draw(color);
+		std::array<double, 4>length = { steer.GetLF_l() ,steer.GetRF_l() ,steer.GetRB_l() ,steer.GetLB_l() };
+		std::array<double, 4>angle  = { steer.GetLF_a() ,steer.GetRF_a() ,steer.GetRB_a() ,steer.GetLB_a() };
+		robot.SetPower(length ,angle ).draw(color);
 	}
 }
