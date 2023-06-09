@@ -1,0 +1,3 @@
+[submodule "steering/steering/UdonLibrary"]
+	path = steering/steering/UdonLibrary
+	url = https://github.com/udonrobo/UdonLibrary.git
