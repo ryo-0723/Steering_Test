@@ -4,21 +4,31 @@
 void Steer::Update(Vec2 Axis, double z, double gyro) {
 	/*とりあえずジャイロのことは加味せずに計算していく*/
 	/*z（旋回のベクトル）を(0,z)とすることでy軸と同じ方向になるベクトルが作れる*/
-	//LF--時計回り
-	std::array<Vec2, 4> data{};
-	for (int i = 0; i < 4; i++) {
-		data[i] = Axis + Vec2{ 0,z }.rotate((i * -0.5 - 0.25) * Math::Pi);/*Vec2*/
-	}
-	for (int i = 0; i < 4; i++) {
-		Tire[i].length = data[i].length();
-		//Tire[i].angle = ToDegrees(data[i].yx().rotate(-0.5 * Math::Pi).getAngle());
-		Tire[i].angle = ToDegrees(data[i].yx().rotated(-0.5 * Math::Pi).getAngle());	/*overangleの時用*/
-		Tire[i].update();
-		}
+	//LFから時計回りにタイヤの計算
+	/*
+	[0]LF　  ↑	     [1]RF
+	   |￣￣￣￣￣￣|
+	   |	   		| 
+	   |			|
+	   |			|
+	   |			|
+	   |____________|
+	[3]LB			 [2]RB
+	*/
+	std::array<Vec2, 4> data{};//計算結果一時保存場所
 
-	const auto max = (*std::max_element(Tire.begin(), Tire.end(), [](const Wheel& lhs, const Wheel& rhs) {
-		return lhs.length < rhs.length;})).length;
+	for (int i = 0; i < 4; i++) {//タイヤの出力計算
+		data[i] = Axis + Vec2{ 0,z }.rotate((i * -0.5 - 0.25) * Math::Pi);/*Vec2*/
+		//Tire[i].Update(ToDegrees(data[i].yx().rotated(-0.5 * Math::Pi).getAngle()),
+		//(double)data[i].length());
+
+		Tire[i].UpdateRev(ToDegrees(data[i].yx().rotated(-0.5 * Math::Pi).getAngle()),
+			(double)data[i].length());
+	}
+
 	/*PWMの最大値をとる*/
+	const auto max = (*std::max_element(Tire.begin(), Tire.end(), [](const Wheel& lhs, const Wheel& rhs) {
+		return abs(lhs.length) < abs(rhs.length);})).length;
 	int MAX = 100;
 	if (max > MAX) {
 		double maximum = MAX / max;
@@ -26,48 +36,30 @@ void Steer::Update(Vec2 Axis, double z, double gyro) {
 			Tire[i].length *= maximum;
 		}
 	}
-
-	for (int i = 0; i < 4; i++) {
-		Print << U" angle: " << Tire[i].angle		<< U" length: " << Tire[i].length;
-		Print << U" overa: " << Tire[i].getangle() << U" offset: " << Tire[i].offset;
-		Tire[i].end_update();
-	}
-	Print << Tire[0].oldangle;
-
 }
 
-void Steer::show() {
-
-
+void Steer::Show() {
+	//for(int i=0;i<4;++i)
+	//Print << U"angle  :"<< Tire[i].GetAngle();
+	//for(int i=0;i<4;++i)
+	//Print << U"length :"<< Tire[i].GetLength();
 }
 
 void Steer::Stop() {
-
-
+	for (int i = 0; i < 4;++i) {
+		Tire[i].Stop();
+	}
+}
+void Steer::Allow() {
+	for (int i = 0; i < 4; ++i) {
+		Tire[i].Allow();
+	}
 }
 
-double Steer::GetLF_l() {
-	return Tire[0].length;
-}
-double Steer::GetLF_a() {
-	return Tire[0].getangle();
-}
-double Steer::GetRF_l() {
-	return Tire[1].length;
-}
-double Steer::GetRF_a() {
-	return Tire[1].getangle();
-}
-double Steer::GetRB_l() {
-	return Tire[2].length;
-}
-double Steer::GetRB_a() {
-	return Tire[2].getangle();
-}
-double Steer::GetLB_l() {
-	return Tire[3].length;
-}
-double Steer::GetLB_a() {
-	return Tire[3].getangle();
+Vec2 Steer::GetPower(place unit) {
+	return { Tire[static_cast<int>(unit)].GetAngle(),Tire[static_cast<int>(unit)].GetLength() };
 }
 
+void Steer::Culibration() {
+
+}
